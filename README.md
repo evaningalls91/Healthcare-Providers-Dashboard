@@ -20,6 +20,8 @@ The report answers questions a hospital administrator would actually ask:
 
 The dataset is a classic **star schema**: one fact table surrounded by descriptive dimension tables.
 
+![Model view](Healthcare%20ModelView.PNG)
+
 | Table | Role | Key columns |
 |---|---|---|
 | `visits` | **Fact**, one row per patient visit | Date of Visit, Treatment/Medication Cost, Insurance Coverage, Room Charges, Service Type, and foreign keys to every dimension |
@@ -30,8 +32,9 @@ The dataset is a classic **star schema**: one fact table surrounded by descripti
 | `procedures` | Dimension | Procedure ID, Procedure |
 | `insurance` | Dimension | Insurance ID, Insurance Provider |
 | `cities` | Dimension | City ID, City, State |
+| `DateTable` | Date dimension | Date, Month, Month number (marked as the report's date table) |
 
-The `visits` table connects to each dimension through its ID column, forming one-to-many relationships that let a single visit be sliced by patient, provider, department, diagnosis, procedure, insurer, or geography.
+The `visits` table connects to each dimension through its ID column, forming one-to-many relationships that let a single visit be sliced by patient, provider, department, diagnosis, procedure, insurer, or geography. A dedicated `DateTable` joins to Date of Visit and drives the year/quarter filtering, which is the recommended pattern for reliable time-based analysis in Power BI.
 
 ## What I Learned
 
@@ -39,6 +42,7 @@ The `visits` table connects to each dimension through its ID column, forming one
 - **Building a star schema from flat files.** I imported eight separate CSVs and wired up the relationships in the model view rather than flattening everything into one giant table, keeping the fact table narrow and the dimensions reusable.
 - **Understanding cardinality and filter direction.** Each dimension is on the "one" side and `visits` on the "many" side, so filters flow outward from a dimension into the fact table. Getting this right is what makes a single slicer update every visual on the page.
 - **Choosing the right grain.** Recognizing that "one row = one visit" is the fact grain shaped every measure and aggregation that followed.
+- **Adding a dedicated date table.** Instead of relying on the raw Date of Visit column, I created a separate `DateTable` and marked it as the report's date table, so year/quarter drill-down and time intelligence work reliably.
 
 ### Data preparation (Power Query)
 - Cleaning and type-casting imported columns (dates, currency, whole numbers) so aggregations and the date hierarchy behave correctly.
@@ -66,6 +70,7 @@ The `visits` table connects to each dimension through its ID column, forming one
 | `Healthcare Provide Dataset.zip` | Source data: the eight CSVs, provider images, and the requirements PDF |
 | `Healthcare Provider Dashboard.PNG` | Screenshot of the main report page |
 | `Healthcare Provider Dashboard Filter.PNG` | Screenshot with the slide-out filter panel open |
+| `Healthcare ModelView.PNG` | Screenshot of the data model (star schema) |
 
 ## How to Open
 
